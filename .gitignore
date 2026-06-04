@@ -1,0 +1,13 @@
+AwesomeSites/
+AwesomeSites-Pack04/
+project_assets/
+
+fps-web-demo/node_modules/
+fps-web-demo/dist/
+fps-web-demo/.vite/
+fps-web-demo/temp-dom.html
+
+*.log
+tmp-*.png
+Thumbs.db
+.DS_Store
