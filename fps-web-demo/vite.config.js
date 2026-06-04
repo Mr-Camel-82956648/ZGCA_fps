@@ -69,6 +69,7 @@ export default defineConfig(async () => {
     path.resolve(projectAssetsRoot, 'exported_glb/20260603scene.glb'),
     path.resolve(projectAssetsRoot, 'exported_glb/20260603walkable.glb'),
     path.resolve(projectAssetsRoot, 'exported_glb/20260603blockers.glb'),
+    path.resolve(projectAssetsRoot, 'characters/Soldier.glb'),
   ]) {
     await access(requiredPath);
   }

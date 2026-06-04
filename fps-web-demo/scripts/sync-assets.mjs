@@ -18,6 +18,10 @@ const assetPairs = [
     path.resolve(root, '../project_assets/exported_glb/20260603blockers.glb'),
     path.resolve(root, 'public/assets/collision/blockers.glb'),
   ],
+  [
+    path.resolve(root, '../project_assets/characters/Soldier.glb'),
+    path.resolve(root, 'public/assets/characters/Soldier.glb'),
+  ],
 ];
 
 for (const [source, destination] of assetPairs) {

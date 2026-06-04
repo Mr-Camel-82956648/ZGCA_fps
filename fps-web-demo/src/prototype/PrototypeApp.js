@@ -40,33 +40,68 @@ const cloudScale = new Vector3();
 const materialTint = new Color();
 const materialHsl = { h: 0, s: 0, l: 0 };
 
+function drawSmoothBlob(ctx, points, fillStyle, blur = 0) {
+  ctx.save();
+  ctx.filter = blur ? `blur(${blur}px)` : 'none';
+  ctx.fillStyle = fillStyle;
+  ctx.beginPath();
+  ctx.moveTo(points[0][0], points[0][1]);
+
+  for (let i = 1; i < points.length; i += 1) {
+    const current = points[i];
+    const next = points[(i + 1) % points.length];
+    ctx.quadraticCurveTo(
+      current[0],
+      current[1],
+      (current[0] + next[0]) * 0.5,
+      (current[1] + next[1]) * 0.5,
+    );
+  }
+
+  ctx.closePath();
+  ctx.fill();
+  ctx.restore();
+}
+
 function createCloudTexture() {
   const canvas = document.createElement('canvas');
-  canvas.width = 384;
-  canvas.height = 192;
+  canvas.width = 1024;
+  canvas.height = 384;
   const ctx = canvas.getContext('2d');
 
   ctx.clearRect(0, 0, canvas.width, canvas.height);
-  const puffs = [
-    [92, 114, 50],
-    [150, 86, 62],
-    [222, 98, 54],
-    [286, 122, 40],
-    [198, 132, 60],
-  ];
 
-  for (const [x, y, r] of puffs) {
-    const gradient = ctx.createRadialGradient(x, y, r * 0.18, x, y, r);
-    gradient.addColorStop(0, 'rgba(255, 249, 236, 0.98)');
-    gradient.addColorStop(0.62, 'rgba(255, 241, 207, 0.88)');
-    gradient.addColorStop(1, 'rgba(255, 241, 207, 0)');
-    ctx.fillStyle = gradient;
-    ctx.beginPath();
-    ctx.arc(x, y, r, 0, Math.PI * 2);
-    ctx.fill();
-  }
+  drawSmoothBlob(ctx, [
+    [50, 300], [120, 240], [200, 230], [270, 170], [365, 176],
+    [455, 106], [585, 126], [660, 166], [760, 136], [875, 166],
+    [970, 224], [1000, 312], [850, 336], [630, 330], [380, 342],
+    [170, 334],
+  ], 'rgba(151, 195, 210, 0.34)', 16);
+
+  drawSmoothBlob(ctx, [
+    [70, 288], [135, 220], [220, 216], [302, 148], [402, 155],
+    [492, 82], [618, 94], [704, 144], [805, 119], [912, 166],
+    [978, 238], [960, 310], [785, 322], [570, 304], [360, 326],
+    [165, 318],
+  ], 'rgba(255, 232, 186, 0.96)', 4);
+
+  drawSmoothBlob(ctx, [
+    [90, 292], [180, 256], [280, 252], [395, 232], [520, 238],
+    [650, 232], [765, 252], [888, 244], [970, 284], [952, 334],
+    [720, 352], [470, 346], [250, 356], [92, 338],
+  ], 'rgba(210, 226, 221, 0.48)', 10);
+
+  const highlight = ctx.createLinearGradient(0, 70, 0, 250);
+  highlight.addColorStop(0, 'rgba(255, 249, 224, 0.72)');
+  highlight.addColorStop(1, 'rgba(255, 249, 224, 0)');
+  drawSmoothBlob(ctx, [
+    [164, 236], [304, 158], [420, 156], [520, 100], [630, 112],
+    [740, 154], [860, 152], [940, 210], [924, 256], [710, 238],
+    [510, 240], [310, 254],
+  ], highlight, 2);
 
   const texture = new CanvasTexture(canvas);
+  texture.colorSpace = SRGBColorSpace;
   texture.needsUpdate = true;
   return texture;
 }
@@ -165,13 +200,13 @@ export class PrototypeApp {
   }
 
   #setupLights() {
-    this._hemi = new HemisphereLight('#b5ddff', '#d7ca92', 0.72);
+    this._hemi = new HemisphereLight('#add9ff', '#c6bb89', 0.44);
     this.scene.add(this._hemi);
 
-    this._ambient = new AmbientLight('#fff1d2', 0.16);
+    this._ambient = new AmbientLight('#fff1d2', 0.055);
     this.scene.add(this._ambient);
 
-    this._sun = new DirectionalLight('#fff2bd', 3.15);
+    this._sun = new DirectionalLight('#fff0b8', 4.05);
     this._sun.position.set(88, 120, 46);
     this._sun.castShadow = true;
     this._sun.shadow.mapSize.setScalar(4096);
@@ -421,23 +456,22 @@ export class PrototypeApp {
     this._cloudGroup.clear();
 
     const span = Math.max(sceneSize.x, sceneSize.z);
-    const baseHeight = Math.max(sceneCenter.y + sceneSize.y * 0.82, 26);
+    const baseHeight = Math.max(sceneCenter.y + sceneSize.y * 0.72, 26);
     const cloudPositions = [
-      [-0.52, 0.12, -0.42, 0.44, 0.16],
-      [-0.12, 0.2, -0.58, 0.48, 0.18],
-      [0.3, 0.1, -0.34, 0.34, 0.14],
-      [0.62, 0.22, -0.08, 0.28, 0.12],
-      [-0.34, 0.28, 0.18, 0.26, 0.11],
-      [0.02, 0.24, 0.42, 0.24, 0.1],
-      [0.44, 0.16, 0.34, 0.3, 0.11],
+      [-0.72, 0.08, -0.18, 0.78, 0.26],
+      [-0.56, 0.15, 0.2, 0.94, 0.32],
+      [-0.34, 0.04, -0.48, 0.68, 0.23],
+      [-0.16, 0.12, 0.52, 0.56, 0.2],
+      [0.34, 0.08, -0.28, 0.58, 0.2],
+      [-0.46, 0.54, 0.02, 0.52, 0.17],
     ];
 
     cloudPositions.forEach(([nx, ny, nz, sx, sy]) => {
       const sprite = new Sprite(new SpriteMaterial({
         map: this._cloudTexture,
-        color: '#fff4dc',
+        color: '#fff1cf',
         transparent: true,
-        opacity: 0.98,
+        opacity: 0.94,
         depthWrite: false,
         fog: false,
       }));
@@ -465,25 +499,25 @@ export class PrototypeApp {
     } else if (/00-ck/i.test(tag)) {
       materialTint.set('#68778b');
     } else if (/color c03/i.test(tag)) {
-      materialTint.set('#d9a15f');
+      materialTint.set('#ffb260');
     } else if (/color m03/i.test(tag)) {
-      materialTint.set('#cfd5dc');
+      materialTint.set('#d8dde2');
     } else if (/00-y|00-z/i.test(tag)) {
-      materialTint.set('#ece8df');
+      materialTint.set('#f1eadb');
     } else if (/grassland|grass|lawn|green|color f07|color f03/i.test(tag)) {
-      materialTint.set('#8dbf3a');
+      materialTint.set('#91c531');
     } else if (/asphalt|road|street/i.test(tag)) {
       materialTint.set('#25262b');
     } else if (/polished concrete|concrete|stone|cement|pave|plaza|sidewalk|地砖/i.test(tag)) {
-      materialTint.set('#d7cfc1');
+      materialTint.set('#d8d2c2');
     } else if (/water/i.test(tag)) {
       materialTint.set('#6fb7d8');
     } else {
       materialTint.getHSL(materialHsl);
       materialTint.setHSL(
         materialHsl.h,
-        Math.min(1, materialHsl.s * 1.18 + 0.03),
-        Math.min(1, materialHsl.l * 0.96 + 0.02),
+        Math.min(1, materialHsl.s * 1.06 + 0.015),
+        Math.min(1, materialHsl.l * 1.02 + 0.01),
       );
     }
 
@@ -496,6 +530,7 @@ export class PrototypeApp {
       opacity: 1,
       side: isThinMesh ? DoubleSide : FrontSide,
       fog: true,
+      flatShading: true,
     });
 
     next.alphaTest = source.alphaTest ?? 0;

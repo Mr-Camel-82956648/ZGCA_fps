@@ -1,66 +1,57 @@
-# ZGCA Prototype
+# ZGCA 第三人称漫游 Demo
 
-This project is a from-scratch browser prototype for a third-person exploration scene.
-It does not modify the packed `summer-afternoon` website files directly.
+这是一个基于 Three.js 的浏览器原型，用来加载 GLB 场景、第三人称角色、可行走面和碰撞体，并验证园区漫游的交互体验。
 
-## Run locally
+## 本地运行
 
-Open a terminal in `d:\projects\ZGCA_fps\fps-web-demo` and run:
+在 `d:\projects\ZGCA_fps\fps-web-demo` 目录执行：
 
 ```bash
 npm install
 npm run dev
 ```
 
-Vite will print a local URL such as `http://127.0.0.1:5173/`.
+Vite 会输出本地访问地址，例如 `http://127.0.0.1:5173/`。
 
-## Stop the local server
-
-If you started the app in a terminal, press `Ctrl + C` in that same terminal window.
-Do not close the browser tab only. The terminal process is the server.
-
-## Build
+## 构建
 
 ```bash
 npm run build
 ```
 
-## Asset locations
+构建前会自动执行 `npm run sync-assets`，把 `../project_assets` 中的运行资产复制到 `public/assets`，再交给 Vite 打包。
 
-- Source asset drop: `../project_assets/exported_glb/`
-- Development scene URL: `/project-assets/exported_glb/20260603scene.glb`
-- Development walkable URL: `/project-assets/exported_glb/20260603walkable.glb`
-- Development blockers URL: `/project-assets/exported_glb/20260603blockers.glb`
-- Production scene copy: `public/assets/scene/scene.glb`
-- Production walkable copy: `public/assets/collision/walkable.glb`
-- Production blockers copy: `public/assets/collision/blockers.glb`
+## 资产流程
 
-During `npm run dev`, Vite serves GLB files directly from `../project_assets/exported_glb/`
-with `Cache-Control: no-store`, so replacing a source GLB and refreshing the browser is
-enough for local development. During `npm run build`, `npm run sync-assets` runs first
-and copies the current source GLBs into `public/assets/...` for production output.
+开发阶段直接读取 `../project_assets`，因此更新 GLB 后刷新浏览器即可看到新模型。`fps-web-demo/public/assets` 是自动生成的运行时拷贝，已经被 `.gitignore` 忽略，不再作为源资产维护。
 
-To update runtime assets manually:
+当前开发期资源路径：
+
+- 视觉场景：`../project_assets/exported_glb/20260603scene.glb`
+- 可行走面：`../project_assets/exported_glb/20260603walkable.glb`
+- 碰撞体：`../project_assets/exported_glb/20260603blockers.glb`
+- 角色模型：`../project_assets/characters/Soldier.glb`
+
+如需手动同步到 `public/assets`：
 
 ```bash
 npm run sync-assets
 ```
 
-## Asset notes
+## 建模约定
 
-- `scene.glb` should contain the visible environment.
-- `walkable.glb` should contain only the surfaces the player is allowed to stand on.
-- `blockers.glb` should use simple collision volumes or shell surfaces that block the player at edges, walls, building masses, and level drops.
-- If a building is enterable, leave door openings in `blockers.glb` and include its interior floor in `walkable.glb`.
-- The runtime treats blockers as mesh surfaces with BVH collision, so closed blocks and well-formed shell boundaries are both valid.
-- For new SketchUp work, keep source `.skp` files and exported `.glb` files under `../project_assets/` first.
+- `scene.glb` 只负责视觉表现，可以包含建筑、道路、景观、远景等可见内容。
+- `walkable.glb` 只包含角色允许站立和行走的表面。
+- `blockers.glb` 用简单体块或壳体表示不可进入区域、建筑实体、边界护栏、高差边缘等。
+- 如果以后开放建筑内部，需要在 `blockers.glb` 留出入口，并把室内地面加入 `walkable.glb`。
+- 当前代码按 BVH 网格碰撞处理 blockers，封闭体块和规整壳体都可以使用。
 
-## Current controls
+## 当前操作
 
-- `W A S D`: move
-- `Shift`: run
-- `Space`: jump
-- `R`: reset to spawn
-- Hold right mouse: orbit camera
-- Mouse wheel: zoom
-- `` ` ``: toggle collision debug
+- `W A S D`：移动
+- `Shift`：奔跑
+- `Space`：跳跃
+- `R`：回到出生点
+- 按住鼠标右键：旋转视角
+- 鼠标滚轮：拉近/拉远
+- `` ` ``：切换碰撞调试显示

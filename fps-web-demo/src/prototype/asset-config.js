@@ -2,19 +2,21 @@ const DEV_ASSET_PATHS = {
   scene: '/project-assets/exported_glb/20260603scene.glb',
   walkable: '/project-assets/exported_glb/20260603walkable.glb',
   blockers: '/project-assets/exported_glb/20260603blockers.glb',
+  avatar: '/project-assets/characters/Soldier.glb',
 };
 
 const BUILD_ASSET_PATHS = {
   scene: '/assets/scene/scene.glb',
   walkable: '/assets/collision/walkable.glb',
   blockers: '/assets/collision/blockers.glb',
+  avatar: '/assets/characters/Soldier.glb',
 };
 
 export const ASSET_PATHS = {
   scene: import.meta.env.DEV ? DEV_ASSET_PATHS.scene : BUILD_ASSET_PATHS.scene,
   walkable: import.meta.env.DEV ? DEV_ASSET_PATHS.walkable : BUILD_ASSET_PATHS.walkable,
   blockers: import.meta.env.DEV ? DEV_ASSET_PATHS.blockers : BUILD_ASSET_PATHS.blockers,
-  avatar: '/assets/characters/Soldier.glb',
+  avatar: import.meta.env.DEV ? DEV_ASSET_PATHS.avatar : BUILD_ASSET_PATHS.avatar,
 };
 
 export const PLAYER = {
