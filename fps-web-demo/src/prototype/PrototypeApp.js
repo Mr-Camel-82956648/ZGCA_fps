@@ -494,11 +494,15 @@ export class PrototypeApp {
     const tag = `${source.name ?? ''} ${meshTag}`.toLowerCase();
     materialTint.copy(source.color ?? new Color('#d7d0c4'));
 
+    const hasBaseColorMap = Boolean(source.map);
     if (!/boli-glass|glass|window/i.test(tag)) {
+      if (hasBaseColorMap) {
+        materialTint.set('#ffffff');
+      }
       const next = new MeshLambertMaterial({
         name: `${source.name ?? 'scene'}-lambert`,
         color: materialTint,
-        map: null,
+        map: source.map ?? null,
         alphaMap: source.alphaMap ?? null,
         transparent: Boolean(source.transparent && (source.opacity ?? 1) < 0.999),
         opacity: source.opacity ?? 1,
