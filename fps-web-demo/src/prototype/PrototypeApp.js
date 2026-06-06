@@ -494,6 +494,30 @@ export class PrototypeApp {
     const tag = `${source.name ?? ''} ${meshTag}`.toLowerCase();
     materialTint.copy(source.color ?? new Color('#d7d0c4'));
 
+    if (!/boli-glass|glass|window/i.test(tag)) {
+      const next = new MeshLambertMaterial({
+        name: `${source.name ?? 'scene'}-lambert`,
+        color: materialTint,
+        map: null,
+        alphaMap: source.alphaMap ?? null,
+        transparent: Boolean(source.transparent && (source.opacity ?? 1) < 0.999),
+        opacity: source.opacity ?? 1,
+        side: isThinMesh ? DoubleSide : FrontSide,
+        fog: true,
+        flatShading: true,
+      });
+
+      next.alphaTest = source.alphaTest ?? 0;
+      if (source.emissiveMap) {
+        next.emissiveMap = source.emissiveMap;
+        next.emissive.copy(source.emissive ?? new Color('#000000'));
+      }
+      if (next.transparent) {
+        next.depthWrite = false;
+      }
+      return next;
+    }
+
     if (/boli-glass|glass|window/i.test(tag)) {
       materialTint.set('#7d9db6');
     } else if (/00-ck/i.test(tag)) {
